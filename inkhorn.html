@@ -57,6 +57,7 @@
 
 		<link href="http://static.tumblr.com/urgl1bv/gqHm3yo3j/jquery.fancybox-1.3.4.css" rel="stylesheet" type="text/css">
 		<link href="http://static.tumblr.com/urgl1bv/AZam1mx1l/normalize.css" rel="stylesheet" type="text/css">
+		<link href="//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css" rel="stylesheet">
 
 		<style type="text/css">
 
@@ -150,9 +151,13 @@
 
 			.post ul.meta { text-align: center; font-size:13px; letter-spacing:0px; text-transform: none; margin-bottom:0px; padding-left:0px; {block:IfSmallMetaInfo}text-transform: uppercase; font-size: 10px; letter-spacing: 2px;{/block:IfSmallMetaInfo} }
 			.post ul.meta li { display: inline; color: {color:Secondary colour}; margin-right: 12px; }
+			.post ul.meta li.like { margin-right:3px; height:10px; }
+			.post ul.meta li.like iframe { height:12px; }
 			.post ul.meta li.tag a { padding-right:8px; }
 			.post ul.meta a { color: {color:Secondary colour}; border-bottom: none; }
 			.post ul.meta a:hover { color: {color:Tertiary colour}; border-bottom: none; }
+
+			.post .like_button { display: inline-block; height:12px; line-height: 12px; }
 
 			.post .caption { text-align:center; }
 			.post .caption p { margin-top:0px; }
@@ -181,7 +186,9 @@
 			ol.notes a:visited,
 			ol.notes a:hover { border-bottom:none; padding:0px; margin:0px; }
 
-			ol.notes { padding:0px; list-style: none; }
+			ol.notes { padding:0px; list-style: none; text-align:left; }
+			ol.notes li { padding:10px 0px; border-bottom:1px solid {color:Secondary colour}; }
+			ol.notes li:last-of-type { border-bottom:none; }
 			ol.notes span a,
 			ol.notes span a:active,
 			ol.notes span a:visited { border-bottom:1px solid {color:Secondary colour}; padding-bottom:2px; }
@@ -208,6 +215,12 @@
 			a#next { margin-left:5px; }
 			a#prev { margin-right:5px; }
 
+			i { margin-right:5px; color:{color:Secondary colour}; }
+
+			#to-top { position: fixed; bottom:10px; left:20px; display: none; }
+			#to-top p { margin:0px; }
+			#to-top p a { opacity:0.7; }
+
 			/* -=  Options CSS  =- */
 
 			{block:IfShowTumblrLinks}
@@ -216,11 +229,15 @@
 			ul#pages { width:auto; margin:0px auto; }
 			{/block:IfShowTumblrLinks}
 
+			{block:IfEnableInfiniteScroll}
+			section#blog { padding-bottom:40px; }
+			{/block:IfEnableInfiniteScroll}
+
 			{block:IfNotSingleColumn}
 
 				#background { width:790px; }
 				#background-inner { width:730px; }
-				section#blog { width:730px; padding-bottom:36px; }
+				section#blog { width:730px; }
 
 				.post { width:260px; float:left; padding:0px 0px 36px 70px; }
 
@@ -253,7 +270,7 @@
 
 			{block:IfEnableInfiniteScroll}
 			footer { display:none; }
-			#infscr-loading { position:fixed; bottom:18px; right:220px; }
+			#infscr-loading { position:fixed; top:15px; left:20px; height:16px; width:16px; }
 			#infinite-scroll-footer { display:block; position:fixed; bottom:0px; right:20px; text-align:right; opacity:0.6; }
 			#infinite-scroll-footer:hover { opacity:1; }
 			{/block:IfEnableInfiniteScroll}
@@ -276,24 +293,56 @@
 		<script src="http://static.tumblr.com/urgl1bv/46tmo5ttx/less-1.3.3.min.js"></script>
 
 		<script type="text/javascript">
+
 			// use fancybox for hi-res images
 			$(document).ready(function() {
 				$("a.image-link").fancybox();
 				noIndent();
 			});
+
 			// remove image indentation in paragraphs
 			function noIndent() {
 				$("a.image-link").fancybox();
 				$(".post.text p:has(img)").addClass("no-indent");
 				$(".post.text p a:has(img)").addClass("no-indent");
 			}
+
+			$("#to-top").hide();
+
+			/*
 			// display theme anorak help on customize screen
 			$(document).ready(function () {
 			    if(window.location.href.indexOf("tumblr.com/customize") > -1) {
 			       // display bottom right credit and support link later
 			    }
 			});
+			*/
+
 		</script>
+
+		{block:IfToTopButton}
+		<script type="text/javascript">
+
+			// scroll to top
+			$(function () {
+				$(window).scroll(function () {
+					if ($(this).scrollTop() > 700) {
+						$('#to-top').fadeIn();
+					} else {
+						$('#to-top').fadeOut();
+					}
+				});
+				// scroll body to 0px on click
+				$('#to-top a').click(function () {
+					$('body,html').animate({
+						scrollTop: 0
+					}, 800);
+					return false;
+				});
+			});
+
+		</script>
+		{/block:IfToTopButton}
 
 		{block:IfNotSingleColumn}
 		<script type="text/javascript">
@@ -321,13 +370,29 @@
 					loading: {	img : "http://static.tumblr.com/fjltjbq/wgUm4m75u/loading.gif",
 								msgText: "",
 								finishedMsg: "" }
-					},function( newElements ) {
+					},
+					function( newElements ) {
+
 						var $container = $('#blog');
 						var $newElems = $( newElements ).css({ opacity: 0 });
+
+					    var $newElemsIDs = $newElems.map(function () {
+					        return this.id;
+					    }).get();
+
 						$newElems.imagesLoaded(function(){
-						$newElems.animate({ opacity: 1 });
-						$container.masonry( 'appended', $newElems, true );
-					});
+
+							$newElems.animate({ opacity: 1 });
+							$container.masonry( 'appended', $newElems, true );
+
+							// enable likes
+							Tumblr.LikeButton.get_status_by_post_ids($newElemsIDs);
+							$("a#like").css("line-height" , "12px");
+
+							// re-enable fancybox and indent code
+							noIndent();
+
+						});
 					}
 				);
 			});
@@ -341,7 +406,7 @@
 
 	{block:IfNotLegacyMode}
 
-	<body id="{block:IfNotSingleColumn}two-col{/block:IfNotSingleColumn}">
+	<body id="{block:IfNotSingleColumn}two-col{/block:IfNotSingleColumn}" class="{block:PermalinkPage}permalink-page{/block:PermalinkPage}">
 
 		<div id="background">
 		<div id="background-inner">
@@ -373,14 +438,14 @@
 			{block:Posts}
 
 				{block:Text}
-				<div class="post text">
+				<div class="post text" id="{PostID}">
 					{block:Title}<h2><a href="{Permalink}">{Title}</a></h2>{/block:Title}
 					{Body}
 				<!-- / post text -->
 				{/block:Text}
 
 				{block:Photo}
-				<div class="post photo">
+				<div class="post photo" id="{PostID}">
 					<a href="{PhotoURL-HighRes}" class="image-link clearfix">
 						<img class="image" src="{PhotoURL-500}" alt="{PhotoAlt}"/>
 					</a>
@@ -393,7 +458,7 @@
 				{/block:Photo}
 
 				{block:Photoset}
-				<div class="post photoset">
+				<div class="post photoset" id="{PostID}">
 					{Photoset-500}
 					{block:Caption}
 					<div class="caption">
@@ -404,7 +469,7 @@
 				{/block:Photoset}
 
 				{block:Quote}
-				<div class="post quote">
+				<div class="post quote" id="{PostID}">
 					<a href="{LinkURL}" class="{Length}">
 						<h2 class="quote">&#8220;{Quote}&#8221;</h2>
 					</a>
@@ -417,7 +482,7 @@
 				{/block:Quote}
 
 				{block:Link}
-				<div class="post link">
+				<div class="post link" id="{PostID}">
 					<a class="link" href="{URL}" target="{Target}">
 						<h2>{Name} <span></span></h2>
 					</a>
@@ -430,7 +495,7 @@
 				{/block:Link}
 
 				{block:Chat}
-				<div class="post chat">
+				<div class="post chat" id="{PostID}">
 					{block:Title}<h2>{Title}</h2>{/block:Title}
 					<div class="clearfix">
 			        {block:Lines}
@@ -444,7 +509,7 @@
 				{/block:Chat}
 
 				{block:Audio}
-				<div class="post audio">
+				<div class="post audio" id="{PostID}">
 	                {block:IfShowAlbumArtOnAudioPosts}
 	                    {block:AlbumArt}
 	                        <div class="art">
@@ -464,7 +529,7 @@
 	            {/block:Audio}
 
 				{block:Video}
-				<div class="post video">
+				<div class="post video" id="{PostID}">
 					<div class="player clearfix">
 						{block:IfNotSingleColumn}{Video-250}{/block:IfNotSingleColumn}
 						{block:IfSingleColumn}{Video-500}{/block:IfSingleColumn}
@@ -480,17 +545,20 @@
 				<!-- post meta -->
 				{block:IndexPage}
 					<ul class="meta">
-						{block:Date}<li>{DayOfMonth} {Month} {Year}</li>{/block:Date}
-						{block:NoteCount}<li><a href="{Permalink}">{NoteCountWithLabel}</a></li>{/block:NoteCount}
-						{block:IfShowTags}{block:HasTags}<li class="tag">{block:Tags}<a href="{TagURL}">#{Tag}</a>{/block:Tags}</li>{/block:HasTags}{/block:IfShowTags}
-						{block:IfDisqusShortname}<a href="{Permalink}#disqus_thread">{lang:View comments}</a>{/block:IfDisqusShortname}
+						{block:Date}<li><a href="{Permalink}">{DayOfMonth} {Month} {Year}</a></li>{/block:Date}
+						{block:IfShowTags}{block:HasTags}<i class="icon-tags"></i><li class="tag">{block:Tags}<a href="{TagURL}">#{Tag}</a>{/block:Tags}</li>{/block:HasTags}{/block:IfShowTags}
+						{block:IfDisqusShortname}<li><i class="icon-comments"></i><a href="{Permalink}#disqus_thread">{lang:View comments}</a></li>{/block:IfDisqusShortname}
+						<li class="like">{LikeButton size="10"}</li>
+						{block:NoteCount}<li><a href="{Permalink}">{NoteCount}</a></li>{/block:NoteCount}
 					</ul>
 				{/block:IndexPage}
 
 				{block:PermalinkPage}
 					<ul class="meta">
 						{block:Date}<li>{DayOfMonth} {Month} {Year}</li>{/block:Date}
-						{block:IfShowTags}{block:HasTags}<li class="tag">{block:Tags}<a href="{TagURL}">#{Tag}</a>{/block:Tags}</li>{/block:HasTags}{/block:IfShowTags}
+						{block:IfShowTags}{block:HasTags}<i class="icon-tags"></i><li class="tag">{block:Tags}<a href="{TagURL}">#{Tag}</a>{/block:Tags}</li>{/block:HasTags}{/block:IfShowTags}
+						<li class="like">{LikeButton size="10"}</li>
+						{block:NoteCount}<li><a href="{Permalink}">{NoteCount}</a></li>{/block:NoteCount}
 					</ul>
 					<div class="permalink-footer clearfix">
 						{block:PostNotes}{PostNotes}{/block:PostNotes}
@@ -511,6 +579,10 @@
 
 			<div id="infinite-scroll-footer">
 				<p>Tumblr theme by <a href="http://themeanorak.com" title="Free and premium Tumblr themes by Theme Anorak">Theme Anorak</a></p>
+			</div>
+
+			<div id="to-top">
+				<p><i class="icon-circle-arrow-up"></i> <a href="#">Back to top</a></p>
 			</div>
 
 			<footer>
