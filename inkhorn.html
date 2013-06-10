@@ -79,8 +79,8 @@
 			#background-inner { margin:0 auto; background:{color:Content Background}; border-left: 15px solid {color:Stripe}; border-right: 15px solid {color:Stripe}; width:670px; }
 			section#blog { margin: 0 auto; width: 670px; }
 
-			header { margin: 0px auto 66px auto; padding-top:60px; }
-			footer { margin: 0 auto; text-align: center; color: {color:Secondary colour}; padding-bottom: 66px; }
+			header { margin: 0px auto 54px auto; padding-top:60px; }
+			footer { margin: 0 auto; text-align: center; color: {color:Secondary colour}; padding-bottom: 56px; }
 
 			ul#tumblr-links,
 			ul#pages { width:510px; text-align: center; padding:0px; margin:24px 0px 0px 0px; }
@@ -103,7 +103,7 @@
 
 			a,
 			a:visited,
-			a:active { color: {color:Tertiary colour}; text-decoration: none; border-bottom: 1px solid {color:Secondary colour}; padding-bottom: 2px; }
+			a:active { color: {color:Tertiary colour}; text-decoration: none; border-bottom: 1px solid {color:Secondary colour}; padding-bottom: 2px; -webkit-transition: all 0.3s ease-out; -moz-transition: all 0.3s ease-out; transition: all 0.3s ease-out; }
 			a:hover { border-bottom: 1px solid {color:Tertiary colour}; }
 
 			a#fancybox-close,
@@ -156,7 +156,7 @@
 
 			.post .caption { text-align:center; }
 			.post .caption p { margin-top:0px; }
-			.post.photo a.image-link .image { margin-bottom:0px; }
+			.post.photo a.image-link .image { margin-bottom:12px; }
 
 			.post.photo { width:85%; text-align:center; }
 			.post.photo .caption { width:510px; margin:0 auto; }
@@ -205,6 +205,9 @@
 
 			#infinite-scroll-footer { display:none; font-size:12px; }
 
+			a#next { margin-left:5px; }
+			a#prev { margin-right:5px; }
+
 			/* -=  Options CSS  =- */
 
 			{block:IfShowTumblrLinks}
@@ -217,7 +220,7 @@
 
 				#background { width:790px; }
 				#background-inner { width:730px; }
-				section#blog { width:730px; }
+				section#blog { width:730px; padding-bottom:36px; }
 
 				.post { width:260px; float:left; padding:0px 0px 36px 70px; }
 
@@ -266,14 +269,13 @@
 		<![endif]-->
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-		{block:IfEnableInfiniteScroll}<script src="http://static.tumblr.com/urgl1bv/udLm41xq0/jquery.infinitescroll.min.js"></script>{/block:IfEnableInfiniteScroll}
+		<script src="http://static.tumblr.com/urgl1bv/udLm41xq0/jquery.infinitescroll.min.js"></script>
 		<script src="http://static.tumblr.com/urgl1bv/aP8m3ynqq/jquery.easing-1.3.pack.js"></script>
 		<script src="http://static.tumblr.com/urgl1bv/tZ8m3yne1/jquery.fancybox-1.3.4.pack.js"></script>
 		<script src="http://static.tumblr.com/urgl1bv/2EMme8nfy/jquery.masonry.min.js"></script>
 		<script src="http://static.tumblr.com/urgl1bv/46tmo5ttx/less-1.3.3.min.js"></script>
 
 		<script type="text/javascript">
-
 			// use fancybox for hi-res images
 			$(document).ready(function() {
 				$("a.image-link").fancybox();
@@ -285,19 +287,31 @@
 				$(".post.text p:has(img)").addClass("no-indent");
 				$(".post.text p a:has(img)").addClass("no-indent");
 			}
-			// display Theme Anorak help on customize screen
+			// display theme anorak help on customize screen
 			$(document).ready(function () {
 			    if(window.location.href.indexOf("tumblr.com/customize") > -1) {
-			       // display bottom right credit and help panel
-
+			       // display bottom right credit and support link later
 			    }
 			});
-
 		</script>
+
+		{block:IfNotSingleColumn}
+		<script type="text/javascript">
+			// enable two column grid
+			$(function(){
+				var $container = $('#blog');
+				$container.imagesLoaded(function(){
+					$container.masonry({
+						itemSelector: '.post',
+						isResizable: false
+					})
+				});
+			});
+		</script>
+		{/block:IfNotSingleColumn}
 
 		{block:IfEnableInfiniteScroll}
 		<script type="text/javascript">
-
 			// enable infinite scroll
 			$(document).ready(function() {
 				$('section#blog').infinitescroll({
@@ -307,38 +321,18 @@
 					loading: {	img : "http://static.tumblr.com/fjltjbq/wgUm4m75u/loading.gif",
 								msgText: "",
 								finishedMsg: "" }
-					}, function(){
-						noIndent();
-					}
-				);
-				// ensure masonry works with infinite scroll
-				function( newElements ) {
-					var $newElems = $( newElements ).css({ opacity: 0 });
-					$newElems.imagesLoaded(function(){
+					},function( newElements ) {
+						var $container = $('#blog');
+						var $newElems = $( newElements ).css({ opacity: 0 });
+						$newElems.imagesLoaded(function(){
 						$newElems.animate({ opacity: 1 });
 						$container.masonry( 'appended', $newElems, true );
 					});
-				}
+					}
+				);
 			});
-
 		</script>
 		{/block:IfEnableInfiniteScroll}
-
-		{block:IfNotSingleColumn}
-		<script type="text/javascript">
-			// load two column grid
-			$(function(){
-				var $container = $('#blog');
-				$container.imagesLoaded(function(){
-					$container.masonry({
-						itemSelector: '.post',
-						isResizable: false
-					});
-				});
-			});
-		</script>
-
-		{/block:IfNotSingleColumn}
 
 		{/block:IfNotLegacyMode}
 
@@ -392,7 +386,7 @@
 					</a>
 					{block:Caption}
 					<div class="caption">
-						{Caption}
+						{LinkOpenTag}{Caption}{LinkCloseTag}
 					</div>
 					{/block:Caption}
 				<!-- / post photo -->
