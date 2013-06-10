@@ -323,6 +323,21 @@
 				$(".post.text p a:has(img)").addClass("no-indent");
 			}
 
+			// set height of background div
+			function setHeight() {
+			    var viewport = $(window).height();
+			    var background = $("#background").height();
+
+			    if (viewport > background) {
+					$("#background, #background-inner").css("height", viewport);
+				}
+			}
+
+			$(document).ready(function() {
+			    setHeight();
+			    $(window).bind('resize', setHeight);
+			});
+
 			/*
 			// display theme anorak help on customize screen
 			$(document).ready(function () {
