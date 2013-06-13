@@ -5,7 +5,7 @@
 
     <head>
 
-		<meta charset="utf-8">
+    	<meta charset="utf-8">
 
 		<meta name="font:Body" content="Georgia">
 		<meta name="font:Titles" content="Baskerville">
@@ -19,7 +19,7 @@
 		<meta name="color:Secondary colour" content="#AAAAAA">
 		<meta name="color:Tertiary colour" content="#000000">
 
-		<meta name="image:Background image" content="">
+		<meta name="image:Background" content="">
 		<meta name="color:Background" content="#F7F7F7">
 		<meta name="color:Content Background" content="#FFFFFF">
 
@@ -74,7 +74,7 @@
 
 			/* -=  general and layout  =- */
 
-			body { margin: 0 auto; width: 100%; height:100%; background: {color:Background}; color: {color:Primary colour}; font-family: {font:Body}, Baskerville, Times, "Times New Roman", serif; font-weight: 300; font-size: 13px; line-height: 24px;  }
+			body { margin: 0 auto; width: 100%; height:100%; background:{color:Background} url('{image:Background}'); color: {color:Primary colour}; font-family: {font:Body}, Baskerville, Times, "Times New Roman", serif; font-weight: 300; font-size: 13px; line-height: 24px;  }
 
 			#background { background:{color:Content Background}; margin: 0 auto; width: 730px; }
 			#background-inner { margin:0 auto; background:{color:Content Background}; border-left: 15px solid {color:Stripe}; border-right: 15px solid {color:Stripe}; width:670px; }
@@ -129,6 +129,7 @@
 			a.no-indent:hover { border-bottom:none; padding:0px; }
 
 			blockquote { padding-left:24px; border-left:1px solid {color:Secondary colour}; font-style: italic; margin:12px; }
+			blockquote img { max-width:100%; }
 
 			footer a,
 			footer a:link,
@@ -139,7 +140,7 @@
 			nav a,
 			nav a:link,
 			nav a:visited,
-			nav a:active { color: {color:Primary colour}; text-decoration: none; border-bottom: 0px solid {color:BG colour}; }
+			nav a:active { color: {color:Primary colour}; text-decoration: none; border-bottom: 0px solid {color:Content Background}; -webkit-transition: all 0.3s ease-out; -moz-transition: all 0.3s ease-out; transition: all 0.3s ease-out; }
 			nav a:hover { color:{color:Tertiary colour}; border-bottom: 1px solid {color:Secondary colour}; padding-bottom: 2px; }
 			header nav { text-align:center; }
 
@@ -158,11 +159,11 @@
 			.post ul.meta li { display: inline; color: {color:Secondary colour}; margin-right: 12px; }
 			.post ul.meta li.like { margin-right:3px; height:10px; }
 			.post ul.meta li.like iframe { height:12px; }
-			.post ul.meta li.tag a { padding-right:8px; }
+			.post ul.meta li.tag a { padding-right:8px; display: inline-block; }
 			.post ul.meta a { color: {color:Secondary colour}; border-bottom: none; }
 			.post ul.meta a:hover { color: {color:Tertiary colour}; border-bottom: none; }
 
-			.post ul.meta.tags { margin:-10px 0px 0px 0px; }
+			.post ul.meta.tags { margin:5px 0px 0px 0px; }
 
 			.post .like_button { display: inline-block; height:12px; line-height: 12px; }
 
@@ -260,6 +261,8 @@
 
 				.index-page .post.photo { width:260px; text-align: left; }
 				.index-page .post.photo a.image-link .image { max-width:250px; }
+
+				.index-page .post ul.meta.tags { margin:-12px 0px 0px 0px; }
 
 				.index-page .post ul.meta { text-align: left; }
 				.index-page .post.chat .label { text-align: left; }
@@ -487,7 +490,8 @@
 
 				{block:Photoset}
 				<div class="post photoset" id="{PostID}">
-					{Photoset-500}
+					{block:IfNotSingleColumn}{Photoset-250}{/block:IfNotSingleColumn}
+					{block:IfSingleColumn}{Photoset-500}{/block:IfSingleColumn}
 					{block:Caption}
 					<div class="caption">
 						{Caption}
